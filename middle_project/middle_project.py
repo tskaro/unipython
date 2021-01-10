@@ -1,17 +1,34 @@
 # classes defined --------------------------------
 
 class spacecraft:
-    def __init__(self, id, name, speed, arm, capacity, ):
-        self.id = id # unique ID (str)
-        self.name = name # name of the ship (str)
-        self.speed = speed # speed X light speeds (int)
-        self. arm = arm # weapon power grade (1-10 int)
-        self. capacity = capacity
+    def __init__(self, name, speed, arm, capacity, quantity):
+        self.name = name  # name of the ship (str)
+        self.speed = speed  # speed X light speeds (int)
+        self.arm = arm  # weapon power grade (1-10 int)
+        self.capacity = capacity  # crew capacity (int)
+        self.quantity = quantity  # number of items (int)
+
 
 class craftport:
-    def __init__(self, name, address, products):
-        self.name = name
+    def __init__(self, portname, address, products):
+        self.portname = portname
         self.address = address
         self.products = products
 
-jedi_starfighter = spacecraft("cr1","Jedi Starfigter", 5, 1, 3)
+
+# spacecraft list---------------------------------
+
+foundations_intergalactic_port = craftport("Foundations intergalactic port", "Canis Major Overdensity", [])
+products = []
+craft_list = [
+    {"name": "Jedi Starfighter", "speed": 5, "arm": 1, "capacity": 15, "quantity": 11},
+    {"name": "Starship Enterprise", "speed": 15, "arm": 9, "capacity": 3000, "quantity": 6},
+    {"name": "Millennium Falcon", "speed": 18, "arm": 10, "capacity": 4500, "quantity": 3},
+    {"name": "Millennium Falcon", "speed": 18, "arm": 10, "capacity": 4500, "quantity": 1},
+]
+
+for name, speed, arm, capacity, quantity in craft_list:
+    products.append(spacecraft(name, speed, arm, capacity, quantity))
+
+print(type(products[1]))
+
