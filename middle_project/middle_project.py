@@ -19,7 +19,7 @@ class craftport:
 # spacecraft list---------------------------------
 
 foundations_intergalactic_port = craftport("Foundations intergalactic port", "Canis Major Overdensity", [])
-products = []
+#products = []
 craft_list = [
     {"name": "Jedi Starfighter", "speed": 5, "arm": 1, "capacity": 15, "quantity": 11},
     {"name": "Starship Enterprise", "speed": 15, "arm": 9, "capacity": 3000, "quantity": 6},
@@ -27,8 +27,8 @@ craft_list = [
     {"name": "Millennium Falcon", "speed": 18, "arm": 10, "capacity": 4500, "quantity": 1},
 ]
 
-for name, speed, arm, capacity, quantity in craft_list:
-    products.append(spacecraft(name, speed, arm, capacity, quantity))
+for item in craft_list:
+    name, speed, arm, capacity, quantity = item.values()
+    foundations_intergalactic_port.products.append(spacecraft(name, speed, arm, capacity, quantity))
 
-print(type(products[1]))
-
+print(foundations_intergalactic_port.products[1].arm)
