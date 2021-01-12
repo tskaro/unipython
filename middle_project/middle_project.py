@@ -36,5 +36,4 @@ for item in craft_list:
     name, speed, arm, capacity, quantity = item.values()
     foundations_intergalactic_port.products.append(spacecraft(name, speed, arm, capacity, quantity))
 
-#print(foundations_intergalactic_port.products[1].arm)
-print(foundations_intergalactic_port.menu())
+foundations_intergalactic_port.menu()
