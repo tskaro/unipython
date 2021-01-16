@@ -15,8 +15,7 @@ class craftport:
         self.address = address
         self.products = products
 
-    def menu(self):
-        print('Welcome in Foundations intergalactic port, here is our legendary assortment:')
+    def assortment(self):
         for index, product in enumerate(self.products):
             print(
                 f'{index + 1}. {product.name} with light speed of {product.speed}, weapon on a bord rank {product.arm},'
@@ -47,3 +46,18 @@ for item in craft_list:
     foundations_intergalactic_port.products.append(spacecraft(name, speed, arm, capacity, quantity))
 
 # commend line ------------------------------------------
+
+print('Oh who we got here?! Rick Sanchez! \n'
+      'Welcome in Foundations intergalactic port,\n'
+      'Here is our legendary assortment:')
+foundations_intergalactic_port.assortment()
+print('In which ship are you interested?')
+
+while True:
+    ship_index = int(input("Type the number of the ship:"))-1
+    if ship_index <= len(foundations_intergalactic_port.products):
+        print(f'{foundations_intergalactic_port.products[ship_index].name}?! Nice choice! \n'
+              f'I have heard about your spectacular taste')
+        break
+    else:
+        print("Please enter valid number")
