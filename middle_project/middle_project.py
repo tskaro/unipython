@@ -17,12 +17,22 @@ class craftport:
 
     def menu(self):
         print('Welcome in Foundations intergalactic port, here is our legendary assortment:')
-        for product in self.products:
-            print(f'{product.name} with light speed of {product.speed}, weapon on a bord rank {product.arm},'
-                  f' total capicity of {product.capacity} people. We have {product.quantity} left of those')
+        for index, product in enumerate(self.products):
+            print(
+                f'{index + 1}. {product.name} with light speed of {product.speed}, weapon on a bord rank {product.arm},'
+                f' total capicity of {product.capacity} people. We have {product.quantity} left of those')
+
+    def check_quantity(self, index, number):  # Checks for products quantity in port
+        return self.products[index - 1].quantity >= number
+
+    def sell(self, index, number):  # Making correction of quantity after selling
+        self.products[index - 1].quantity = self.products[index - 1].quantity - number
+
+    def add_quantity(self, index, number):  # adds quantity of the product by number
+        self.products[index - 1].quantity = self.products[index - 1].quantity + number
 
 
-# spacecraft list---------------------------------
+# spacecraft list---------------------------------------
 
 foundations_intergalactic_port = craftport("Foundations intergalactic port", "Canis Major Overdensity", [])
 craft_list = [
@@ -36,4 +46,4 @@ for item in craft_list:
     name, speed, arm, capacity, quantity = item.values()
     foundations_intergalactic_port.products.append(spacecraft(name, speed, arm, capacity, quantity))
 
-foundations_intergalactic_port.menu()
+# commend line ------------------------------------------
