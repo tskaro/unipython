@@ -54,10 +54,21 @@ foundations_intergalactic_port.assortment()
 print('In which ship are you interested?')
 
 while True:
-    ship_index = int(input("Type the number of the ship:"))-1
+    ship_index = int(input("Type the number of the ship:"))
     if ship_index <= len(foundations_intergalactic_port.products):
-        print(f'{foundations_intergalactic_port.products[ship_index].name}?! Nice choice! \n'
+        print(f'{foundations_intergalactic_port.products[ship_index-1].name}?! Nice choice! \n'
               f'I have heard about your spectacular taste')
         break
     else:
         print("Please enter valid number")
+
+while True:
+    ship_quantity = int(input("How many ships you want to buy?"))
+    if foundations_intergalactic_port.check_quantity(ship_index,ship_quantity) and ship_quantity > 0:
+        foundations_intergalactic_port.sell(ship_index,ship_quantity)
+        break
+    else:
+        print(f"Ohh... We don't have that many {foundations_intergalactic_port.products[ship_index-1].name}\n"
+              f"Please enter other quantity")
+
+print(foundations_intergalactic_port.assortment())
