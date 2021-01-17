@@ -68,7 +68,8 @@ while True:
         foundations_intergalactic_port.sell(ship_index,ship_quantity)
         break
     else:
-        print(f"Ohh... We don't have that many {foundations_intergalactic_port.products[ship_index-1].name}\n"
+        print(f"Ohh... We don't have that many {foundations_intergalactic_port.products[ship_index-1].name}s\n"
               f"Please enter other quantity")
 
+print(f'Menu after selling')
 print(foundations_intergalactic_port.assortment())
