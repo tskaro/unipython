@@ -1,4 +1,4 @@
-from try_except.tskaromodules import divide, square
+from projects.try_except.tskaromodules import divide, square
 
 while True:
     print('lets divide:')
