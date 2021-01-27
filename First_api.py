@@ -12,7 +12,7 @@ def hello():
 
 @app.route('/get')
 def structure():
-    return craft_list
+    return craft_list[1]
 
 
 app.run()
