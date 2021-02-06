@@ -1,5 +1,6 @@
 from flask import jsonify
 from flask_restful import Resource, reqparse
+from flask_jwt import jwt_required
 
 items = [
     {"id": 1, "name": "Jedi Starfighter", "speed": 1, "arm": 1, "capacity": 15, "quantity": 11},
@@ -13,6 +14,7 @@ class item_list(Resource):
     def get(self):
         return jsonify(items)
 
+    @jwt_required()
     def delete(self):
         items.clear()
 
@@ -31,6 +33,7 @@ class Space_craft(Resource):
                 return jsonify(object)
         return {"message": f"ხომალდი id-ით {item_id} არ მოიძებნა"}
 
+    @jwt_required()
     def post(self, item_id):
         for item in items:
             if item_id == item["id"]:
@@ -53,6 +56,7 @@ class Space_craft(Resource):
         items.append(new_ship)
         return {"message": "Ship has been added successfully"}
 
+    @jwt_required()
     def put(self, item_id):
         ship = Space_craft.ship_parser.parse_args()
         item_in_dict = next(filter(lambda item: item['id'] == item_id, items), None)
