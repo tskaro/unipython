@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request
-from resources import items
+from Flask_projects.Flask_restful_api.resources import items
 
 app = Flask(__name__)
 
