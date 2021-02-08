@@ -7,36 +7,24 @@ class User:
         self.username = username
         self.password = password
 
+    @classmethod
+    def find_by_username(cls, username):
+        connection = sqlite3.connect('data.db')
+        cursor = connection.cursor()
+        cursor.execute('SELECT * FROM users WHERE username=?', (username,))
+        row = cursor.fetchone()
+        connection.commit()
+        connection.close()
+        if row:
+            return cls(*row)
 
-def find_by_username(username):
-    connection = sqlite3.connect('data.db')
-    cursor = connection.cursor()
-    cursor.execute('SELECT * FROM users WHERE username=?', (username,))
-    feedback = cursor.fetchall()
-    if len(feedback) == 0:
-        result = None
-    else:
-        user_id, username, password = feedback[0]
-        result = User(user_id, username, password)
-    connection.commit()
-    connection.close()
-    return result
-
-
-def find_by_id(user_id):
-    connection = sqlite3.connect('data.db')
-    cursor = connection.cursor()
-    cursor.execute('SELECT * FROM users WHERE user_id=?', (user_id,))
-    feedback = cursor.fetchall()
-    if len(feedback) == 0:
-        result = None
-    else:
-        user_id, username, password = feedback[0]
-        result = User(user_id, username, password)
-    connection.commit()
-    connection.close()
-    return result
-
-
-print(find_by_username('tskaro').username)
-print(find_by_id(4))
+    @classmethod
+    def find_by_id(cls, user_id):
+        connection = sqlite3.connect('data.db')
+        cursor = connection.cursor()
+        cursor.execute('SELECT * FROM users WHERE user_id=?', (user_id,))
+        row = cursor.fetchone()
+        connection.commit()
+        connection.close()
+        if row:
+            return cls(*row)
