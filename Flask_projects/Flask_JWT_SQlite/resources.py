@@ -1,6 +1,7 @@
 from flask import jsonify
 from flask_restful import Resource, reqparse
 from flask_jwt import jwt_required
+import sqlite3
 
 items = [
     {"id": 1, "name": "Jedi Starfighter", "speed": 1, "arm": 1, "capacity": 15, "quantity": 11},
@@ -75,6 +76,29 @@ class Space_craft(Resource):
             }
             items.append(new_ship)
             return "Ship has been added successfully"
+
+
+class User_registration(Resource):
+    create_user_parser = reqparse.RequestParser()
+    create_user_parser.add_argument("user_id", required=True, help="Enter your ID")
+    create_user_parser.add_argument("username", required=True, help="Enter your username")
+    create_user_parser.add_argument("password", required=True, help="Enter your password")
+
+    def post(self):
+        new_user = User_registration.create_user_parser.parse_args()
+        connection = sqlite3.connect("data.db")
+        cursor = connection.cursor()
+        cursor.execute('SELECT * FROM users WHERE username=?', (new_user['username'],))
+        row = cursor.fetchone()
+        if row:
+            return "Username already exists"
+        else:
+            cursor.execute('INSERT INTO users Values(?,?,?)', (new_user["user_id"], new_user["username"], new_user["password"]))
+        connection.commit()
+        connection.close()
+        return "New user has been added"
+
+
 
 
 if __name__ == '__main__':
