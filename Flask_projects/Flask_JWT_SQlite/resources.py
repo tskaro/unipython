@@ -3,21 +3,33 @@ from flask_restful import Resource, reqparse
 from flask_jwt import jwt_required
 import sqlite3
 
-items = [
-    {"id": 1, "name": "Jedi Starfighter", "speed": 1, "arm": 1, "capacity": 15, "quantity": 11},
-    {"id": 2, "name": "Starship Enterprise", "speed": 15, "arm": 9, "capacity": 3000, "quantity": 6},
-    {"id": 3, "name": "Millennium Falcon", "speed": 18, "arm": 10, "capacity": 10, "quantity": 8},
-    {"id": 4, "name": "super galaxy gurren lagann", "speed": 30, "arm": 10, "capacity": 10000, "quantity": 1}
-]
+
+def dict_factory(cursor, row):
+    d = {}
+    for idx, col in enumerate(cursor.description):
+        d[col[0]] = row[idx]
+    return d
 
 
 class item_list(Resource):
     def get(self):
-        return jsonify(items)
+        connection = sqlite3.connect("data.db")
+        connection.row_factory = dict_factory
+        cursor = connection.cursor()
+        cursor.execute('SELECT * FROM ships')
+        ships = cursor.fetchall()
+        connection.commit()
+        connection.close()
+        return jsonify(ships)
 
     @jwt_required()
     def delete(self):
-        items.clear()
+        connection = sqlite3.connect("data.db")
+        cursor = connection.cursor()
+        cursor.execute('DELETE FROM ships')
+        ships = cursor.fetchall()
+        connection.commit()
+        connection.close()
 
 
 class Space_craft(Resource):
@@ -28,54 +40,85 @@ class Space_craft(Resource):
     ship_parser.add_argument("arm", type=int, required=False)
     ship_parser.add_argument("capacity", type=int, required=False)
 
+
+
+    @classmethod
+    def find_by_id(cls, item_id):
+        connection = sqlite3.connect("data.db")
+        connection.row_factory = dict_factory
+        cursor = connection.cursor()
+        cursor.execute('SELECT * FROM ships where  id = ?', (item_id,))
+        ships = cursor.fetchone()
+        connection.commit()
+        connection.close()
+        if ships:
+            return ships
+
+    @classmethod
+    def find_by_ship(cls, ship_name):
+        connection = sqlite3.connect("data.db")
+        connection.row_factory = dict_factory
+        cursor = connection.cursor()
+        cursor.execute('SELECT * FROM ships where  name = ?', (ship_name,))
+        ships = cursor.fetchone()
+        connection.commit()
+        connection.close()
+        if ships:
+            return ships
+
+    @classmethod
+    def insert(cls, item_id, ship_input):
+        connection = sqlite3.connect("data.db")
+        cursor = connection.cursor()
+        cursor.execute('INSERT INTO ships VALUES(?,?,?,?,?,?)', (
+            item_id, ship_input["name"], ship_input["speed"], ship_input["arm"], ship_input["capacity"],
+            ship_input["quantity"]))
+        connection.commit()
+        connection.close()
+
+
+
+    @classmethod
+    def update(cls, item_id, ship_input):
+        connection = sqlite3.connect("data.db")
+        cursor = connection.cursor()
+        cursor.execute('UPDATE ships SET name = ?, speed = ? , arm =? , capacity = ? , quantity = ? WHERE id = ?',
+                       (ship_input["name"], ship_input["speed"], ship_input["arm"], ship_input["capacity"],
+                ship_input["quantity"], item_id))
+        connection.commit()
+        connection.close()
+
+
     def get(self, item_id):
-        for object in items:
-            if item_id == object["id"]:
-                return jsonify(object)
-        return {"message": f"ხომალდი id-ით {item_id} არ მოიძებნა"}
+        value = Space_craft.find_by_id(item_id)
+        if value:
+            return value
+        else:
+            return {"message": f"ხომალდი id-ით {item_id} არ მოიძებნა"}
 
     @jwt_required()
     def post(self, item_id):
-        for item in items:
-            if item_id == item["id"]:
-                return {"message": f"ხომალდი id-ით {item_id} უკვე არსებობს"}
-
-        object = Space_craft.ship_parser.parse_args()
-
-        ship_name = object["name"]
-        for item in items:
-            if object["name"] == item["name"]:
-                return {"message": f"ხომალდი სახელად {ship_name} უკვე არსებობს"}
-        new_ship = {
-            "id": item_id,
-            "name": object["name"],
-            "speed": object["speed"],
-            "arm": object["arm"],
-            "capacity": object["capacity"],
-            "quantity": object["quantity"]
-        }
-        items.append(new_ship)
-        return {"message": "Ship has been added successfully"}
+        ship_input = Space_craft.ship_parser.parse_args()
+        if Space_craft.find_by_ship(ship_input['name']) or Space_craft.find_by_id(item_id):
+            return "ship already exist!"
+        else:
+            Space_craft.insert(item_id, ship_input)
+            return "ship has been added successfully"
 
     @jwt_required()
     def put(self, item_id):
-        ship = Space_craft.ship_parser.parse_args()
-        item_in_dict = next(filter(lambda item: item['id'] == item_id, items), None)
-        print(item_in_dict)
-        if item_in_dict:
-            item_in_dict.update(ship)
-            return "ship values had been updated"
-        elif item_in_dict == None:
-            new_ship = {
-                "id": item_id,
-                "name": ship["name"],
-                "speed": ship["speed"],
-                "arm": ship["arm"],
-                "capacity": ship["capacity"],
-                "quantity": ship["quantity"]
-            }
-            items.append(new_ship)
-            return "Ship has been added successfully"
+        ship_input = Space_craft.ship_parser.parse_args()
+        value = Space_craft.find_by_id(item_id)
+        name_value = Space_craft.find_by_ship(ship_input['name'])
+        if value:
+            Space_craft.update(item_id, ship_input)
+            return "Ship info has been edited"
+        elif name_value:
+            return f"To edit {ship_input['name']} go to id_ {name_value['id']}"
+        else:
+            Space_craft.insert(item_id, ship_input)
+            return "New ship has been added successfully"
+
 
 
 class User_registration(Resource):
@@ -89,16 +132,17 @@ class User_registration(Resource):
         connection = sqlite3.connect("data.db")
         cursor = connection.cursor()
         cursor.execute('SELECT * FROM users WHERE username=?', (new_user['username'],))
-        row = cursor.fetchone()
-        if row:
-            return "Username already exists"
+        user_indb = cursor.fetchone()
+        cursor.execute('SELECT * FROM users WHERE user_id=?', (new_user['user_id'],))
+        id_indb = cursor.fetchone()
+        if user_indb or id_indb:
+            return "Username or id already exists"
         else:
-            cursor.execute('INSERT INTO users Values(?,?,?)', (new_user["user_id"], new_user["username"], new_user["password"]))
+            cursor.execute('INSERT INTO users Values(?,?,?)',
+                           (new_user["user_id"], new_user["username"], new_user["password"]))
         connection.commit()
         connection.close()
         return "New user has been added"
-
-
 
 
 if __name__ == '__main__':
