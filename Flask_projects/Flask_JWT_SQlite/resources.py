@@ -121,29 +121,5 @@ class Space_craft(Resource):
 
 
 
-class User_registration(Resource):
-    create_user_parser = reqparse.RequestParser()
-    create_user_parser.add_argument("user_id", required=True, help="Enter your ID")
-    create_user_parser.add_argument("username", required=True, help="Enter your username")
-    create_user_parser.add_argument("password", required=True, help="Enter your password")
-
-    def post(self):
-        new_user = User_registration.create_user_parser.parse_args()
-        connection = sqlite3.connect("data.db")
-        cursor = connection.cursor()
-        cursor.execute('SELECT * FROM users WHERE username=?', (new_user['username'],))
-        user_indb = cursor.fetchone()
-        cursor.execute('SELECT * FROM users WHERE user_id=?', (new_user['user_id'],))
-        id_indb = cursor.fetchone()
-        if user_indb or id_indb:
-            return "Username or id already exists"
-        else:
-            cursor.execute('INSERT INTO users Values(?,?,?)',
-                           (new_user["user_id"], new_user["username"], new_user["password"]))
-        connection.commit()
-        connection.close()
-        return "New user has been added"
-
-
 if __name__ == '__main__':
     print("resources!")

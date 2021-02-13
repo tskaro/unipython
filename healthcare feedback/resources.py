@@ -1,6 +1,5 @@
 from flask import jsonify
 from flask_restful import Resource, reqparse
-from flask_jwt import jwt_required
 from datetime import datetime
 import sqlite3
 
@@ -15,6 +14,7 @@ class Full_data(Resource):
         connection.close()
         return jsonify(patient_data)
 
+
 class Patient_info(Resource):
     Hinfo = reqparse.RequestParser()
     Hinfo.add_argument("Patient_id", type=str, required=True, help="Enter patient ID")
@@ -26,8 +26,7 @@ class Patient_info(Resource):
     def insert(cls, patient_id, Hinfo):
         connection = sqlite3.connect("Health_data.db")
         cursor = connection.cursor()
-        cursor.execute('INSERT INTO Health_info(patient_id,Glucose,SBP,DBP,time) VALUES(?,?,?,?,?)', (
+        cursor.execute('INSERT INTO Health_info(patient_id, Glucose, SBP, DBP, time) VALUES(?,?,?,?,?)', (
             patient_id, Hinfo["Glucose"], Hinfo["SBP"], Hinfo["DBP"], datetime.now().time()))
         connection.commit()
         connection.close()
-

@@ -1,8 +1,11 @@
 from flask import Flask
 from flask_restful import Api
-from resources import item_list, Space_craft, User_registration
+from resources import item_list, Space_craft
+from users import User_registration
 from flask_jwt import JWT
 from security import authentication, identity
+
+
 app = Flask(__name__)
 app.secret_key = "my_secret_key"
 
