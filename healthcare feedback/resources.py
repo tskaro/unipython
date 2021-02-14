@@ -30,3 +30,4 @@ class Patient_info(Resource):
             patient_id, Hinfo["Glucose"], Hinfo["SBP"], Hinfo["DBP"], datetime.now().time()))
         connection.commit()
         connection.close()
+
