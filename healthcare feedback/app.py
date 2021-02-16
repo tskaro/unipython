@@ -64,8 +64,6 @@ class Patient_info(Resource):
     def update(cls, patient_id, Hinfo):
         connection = sqlite3.connect("Health_data.db")
         cursor = connection.cursor()
-        newest_id = cursor.execute('SELECT MAX(row_id) From Health_info WHERE patient_id =?', (patient_id,))
-        print(newest_id)
         cursor.execute('UPDATE Health_info SET Glucose=?, SBP=?, DBP=?, time=? '
                        'WHERE row_id = (SELECT MAX(row_id) From Health_info WHERE patient_id =?)',
                        (Hinfo["Glucose"], Hinfo["SBP"], Hinfo["DBP"],
